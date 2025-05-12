@@ -1,21 +1,37 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { classFilterData, getDataById, parseFirestoreFields, retrieveData } from "../db";
 import { getFacilities } from '../../data';
+import api from '../api';
 
 const initialState = {
   selectedClass:null,
   classLessons: [],
   classData: [],
   classFacilities: [],
+  classCategoriesData: [],
   loading: false,
   error: null,
 };
 
 export const getClasses = createAsyncThunk(
   'class/fetch',
-  async ({type, columnName}, thunkAPI) => {
+  async (params,thunkAPI) => {
     try {
-      const data = await retrieveData('classes', type,columnName);
+      const response = await api.get('/classes',{params});
+      return response.data.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const getClassCategories = createAsyncThunk(
+  'class_categories/fetch',
+  async (thunkAPI) => {
+    try {
+      const response = await api.get('/class_categories');
+      let data = response.data.data;
+      data.push({ id: 0, name: 'Semua Kelas' });
+      data.sort((a, b) => a.id - b.id);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -27,52 +43,17 @@ export const fetchClassById = createAsyncThunk(
   'class/getById',
   async (id, thunkAPI) => {
     try {
-      const res = await getDataById(id, 'classes');
-      const lessons = await retrieveData('lessons', id, "class_id");
-      lessons.sort((a, b) => a.ordering - b.ordering);
-      // Group lessons by group_name
-      const groupedLessons = lessons.reduce((acc, lesson) => {
-        const groupName = lesson.group_name || "Ungrouped";
-
-        if (!acc[groupName]) {
-          acc[groupName] = [];
-        }
-
-        acc[groupName].push(lesson); // simpan seluruh objek lesson
-
-        return acc;
-      }, {});
-
-      // Convert grouped object to array
-      const classSections = Object.entries(groupedLessons).map(([groupName, lessons]) => ({
-        title: groupName,
-        lessons: lessons,
-      }));
-
-      const classData = parseFirestoreFields(res.fields);
+      const response = await api.get('/classes/' + id);
       const updatedFacilities = getFacilities().map((item) => ({
         ...item,
-        value: classData?.[item.key] ?? null
+        value: response.data.data?.[item.key] ?? null
       }));
       return {
-        classData: classData,
-        classSections: classSections,
+        classData: response.data.data,
         classFacilities: updatedFacilities
       };
     } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
-export const getClassesFilter = createAsyncThunk(
-  'class/filter',
-  async ({ClassType, price, duration, keyword, ordering}, thunkAPI) => {
-    try {
-      const data = await classFilterData(ClassType, price, duration, keyword, ordering);
-      return data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
@@ -104,27 +85,26 @@ const classSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(getClassCategories.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getClassCategories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.classCategoriesData = action.payload;
+      })
+      .addCase(getClassCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(fetchClassById.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchClassById.fulfilled, (state, action) => {
         state.loading = false;
         state.selectedClass = action.payload.classData;
-        state.classLessons = action.payload.classSections;
         state.classFacilities = action.payload.classFacilities;
       })
       .addCase(fetchClassById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(getClassesFilter.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getClassesFilter.fulfilled, (state, action) => {
-        state.loading = false;
-        state.classData = action.payload;
-      })
-      .addCase(getClassesFilter.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Authlayout from "../Layouts/AuthLayout";
-import { getTabs } from "../../data";
 import CardItems from "../Fragments/CardItems";
 import { BannerContent } from "../Fragments/Content";
 import { Input, InputButton } from "../Elements/input";
@@ -11,14 +10,12 @@ const token = localStorage.getItem("token");
 const HomePage = () => {
 
 const [activeTab, setActiveTab] = useState("");
-const [tabs, setTabs] = useState([]);
-const { classData } = useClass(activeTab === "" ? null : activeTab);
+const { classData, classCategoriesData } = useClass(activeTab === "" ? null : activeTab);
 
 useEffect(() => {
     if(token === null) {
         window.location.href = "/login";
     }
-    setTabs(getTabs());
     localStorage.removeItem("transactions");
 }, []);
 
@@ -39,12 +36,20 @@ useEffect(() => {
             <p className="mt-2">Jelajahi Dunia Pengetahuan Melalui Pilihan Kami!</p>
             <div className="overflow-x-auto mx-4">
                 <div className="flex space-x-6 whitespace-nowrap border-gray-200 mt-4 mx-4">
-                    {tabs.length > 0 && tabs.map((tab) => (
                     <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
+                        key={""}
+                        onClick={() => setActiveTab("")}
                         className={`pb-2 font-medium text-sm md:text-base transition-all item-option ${
-                        activeTab === tab.key
+                        activeTab === ""
+                            ? "text-red-500 cursor-pointer active"
+                            : "text-gray-700 hover:text-red-500 cursor-pointer"
+                        }`}>Semua Kelas</button>
+                    {classCategoriesData.length > 0 && classCategoriesData.map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`pb-2 font-medium text-sm md:text-base transition-all item-option ${
+                        activeTab === tab.id
                             ? "text-red-500 cursor-pointer active"
                             : "text-gray-700 hover:text-red-500 cursor-pointer"
                         }`}

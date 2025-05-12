@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Authlayout from "../Layouts/AuthLayout";
-import { getDurationFilters, getOrderingFilters, getPriceFilters, getTabs } from "../../data";
+import { getDurationFilters, getOrderingFilters, getPriceFilters } from "../../data";
 import { Card } from "../Elements/card";
 import { H1 } from "../Elements/heading";
 import { Pagination } from "../Fragments/Pagination";
@@ -13,15 +13,14 @@ const token = localStorage.getItem("token");
 const CategoryPage = () => {
 
     // Filter
-    const [classType, setClassType] = useState(null);
+    const [category_id, setClassType] = useState(null);
     const [priceFilter, setPriceFilter] = useState(null);
     const [durationFilter, setDurationFilter] = useState(null);
-    const [keyword, setKeyword] = useState("");
+    const [search, setKeyword] = useState("");
     const [ordering, setOrdering] = useState(null);
-    const { classData } = useClass(null,null,0,classType, priceFilter, durationFilter, keyword, ordering);
+    const { classData, classCategoriesData } = useClass(null,0,category_id, priceFilter, durationFilter, search, ordering);
     // Filter
 
-    const [classTypes, setClassTypes] = useState([]);
     const [durationFilters, setDurationFilters] = useState([]);
     const [priceFilters, setPriceFilters ] = useState([]);
     const [orderingFilters, setorderingFilters] = useState(null);
@@ -31,7 +30,6 @@ const CategoryPage = () => {
         if(token === null) {
             window.location.href = "/login";
         }
-        setClassTypes(getTabs());
         setDurationFilters(getDurationFilters());
         setPriceFilters(getPriceFilters());
         setorderingFilters(getOrderingFilters());
@@ -57,7 +55,7 @@ const CategoryPage = () => {
                                     <img src="../assets/bidang_filter.svg" alt="" /> Bidang Studi
                                     </span>}
                             name="ClassType"
-                            options={classTypes}
+                            options={classCategoriesData}
                             onChange={e => setClassType(e.target.value)}
                         />
                         <FilterSection
@@ -83,7 +81,7 @@ const CategoryPage = () => {
                         <Select className="bg-white mr-2 border-gray-200 md:mt-0 mt-4" onChange={e => setOrdering(e.target.value)} responsive={true}>
                             <option value="" disabled selected>Urutkan</option>
                             {orderingFilters?.length > 0 && orderingFilters.map((ordering) => (
-                                <option value={ordering.key} key={ordering.key}>{ordering.name}</option>
+                                <option value={ordering.id} key={ordering.id}>{ordering.name}</option>
                             ))}
                         </Select>
                         <InputIcon 
@@ -94,7 +92,7 @@ const CategoryPage = () => {
                         icon="search.svg" 
                         responsive={true}
                         onChange={(e) => setKeyword(e.target.value)}
-                        value={keyword}
+                        value={search}
                         ref={keywordRef}>
                         </InputIcon>
                     </div>

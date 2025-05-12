@@ -31,8 +31,8 @@ useEffect(() => {
 
 useEffect(() => {
     if (currentOrder) {
-        setPaymentMethod(currentOrder.paymentMethod);
-        setOpenGroup(getPaymentMethodGroup(currentOrder.paymentMethod));   
+        setPaymentMethod(currentOrder.payment_method);
+        setOpenGroup(getPaymentMethodGroup(currentOrder.payment_method));   
     }
 }, [currentOrder]);
 
@@ -42,12 +42,12 @@ const UpdateTransaction = (e) => {
         alert("Pilih Metode Pembayaran");
         return false;
     }
-    updateOrder(id,{ paymentMethod });
+    updateOrder({ order_id:id,payment_method:paymentMethod });
 };
 
 useEffect(() => {
     if (status) {
-        window.location.href = "/payment/"+currentOrder.order_id;
+        window.location.href = "/payment/"+id;
     }
 }, [status]);
 

@@ -19,8 +19,8 @@ const PaymentPage = () => {
     const [paymentMethod, setPaymentMethod] = useState("");
     const [openHowToPay, setOpenHowToPay] = useState("");
     const [howToPays, setHowToPays] = useState("");
-    const { orderData } = useOrder(null,id,"order_id");
-    const class_id = orderData[0]?.class_id;
+    const { currentOrder } = useOrder(id);
+    const class_id = currentOrder?.class_id;
     const { classFacilities } = useClass("",class_id);
     const { paidOrder, status } = useOrder();
 
@@ -32,8 +32,8 @@ const PaymentPage = () => {
     },[]);
 
     useEffect(() => {
-        setPaymentMethod(getPaymentMethods(orderData[0]?.paymentMethod));
-    }, [orderData]);
+        setPaymentMethod(getPaymentMethods(currentOrder?.payment_method));
+    }, [currentOrder]);
 
     const HandlePaid = (e) => {
         e.preventDefault();
@@ -41,7 +41,7 @@ const PaymentPage = () => {
             alert("Pilih Metode Pembayaran");
             return false;
         }
-        paidOrder(orderData[0]?.id);
+        paidOrder({order_id:id});
     };
 
     useEffect(() => {
@@ -66,7 +66,7 @@ const PaymentPage = () => {
                         )}
                         <TransactionNominal /><br />
                         <div className="grid grid-cols-1 md:grid-cols-2  ... gap-2 mt-2">
-                            <div className="col-span-1 my-1"><ButtonWhite url={`/change_payment/${orderData[0]?.id}`}>Ganti Metode Pembayaran</ButtonWhite></div>
+                            <div className="col-span-1 my-1"><ButtonWhite url={`/change_payment/${id}`}>Ganti Metode Pembayaran</ButtonWhite></div>
                             <div className="col-span-1 my-1"><ButtonPrimarySubmit onClick={HandlePaid} >Bayar Sekarang</ButtonPrimarySubmit></div>
                         </div>
                     </Card>
@@ -97,8 +97,8 @@ const PaymentPage = () => {
                     </Card>
                 </div>
                 <div className="col-span-1 ... mx-2 sm:mx-0 order-1 lg:order-2">
-                    {orderData && (
-                     <ItemSpesification isDetail={true} data={orderData[0]} facilities={classFacilities}/>   
+                    {currentOrder && (
+                     <ItemSpesification isDetail={true} data={currentOrder} facilities={classFacilities}/>   
                     )}
                 </div>
             </div>

@@ -4,7 +4,13 @@ import axios from 'axios';
 const baseUrl = import.meta.env.VITE_FIREBASE_DB_BASEURL
 // Create an Axios instance with default headers
 const api = axios.create({
+  headers: {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
   baseURL: baseUrl,
+  // timeout: 10000,
+  // mode: 'cors',
 });
 
 // Add a request interceptor to set the authorization header on every request
@@ -23,10 +29,10 @@ const api = axios.create({
 //   },
 // );
 api.interceptors.request.use((config) => {
-  // const token = localStorage.getItem('token');
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  // }
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 

@@ -125,7 +125,7 @@ const tabs = [
 
 const order_statuses = [
     {
-        key:"all",
+        key:"",
         name:"Semua Pesanan"
     },
     {
@@ -268,11 +268,11 @@ const classGroups = [
         key:"",
         name:"Semua Kelas"
     },    {
-        key:"in_progress",
+        key:"0",
         name:"Sedang Berjalan"
     },
     {
-        key:"completed",
+        key:"1",
         name:"Selesai"
     }
 ];
@@ -330,67 +330,67 @@ const myClasses = [
 
 const price_filters = [
     {
-        key:"0",
-        name:"Di Bawah Rp100.000"
+        id:0,
+        name:"Dibawah Rp100.000"
     },
     {
-        key:"1",
+        id:1,
         name:"Rp100.000 - Rp300.000"
     },
     {
-        key:"2",
+        id:2,
         name:"Diatas Rp300.000"
     }
 ];
 
 const duration_filters = [
     {
-        key:"0",
+        id:0,
         name:"Kurang dari 4 Jam"
     },
     {
-        key:"1",
+        id:1,
         name:"4 - 8 Jam"
     },
     {
-        key:"2",
+        id:2,
         name:"Lebih dari 8 Jam"
     }
 ];
 
 const ordering_filters = [
     {
-        key:"0",
+        id:0,
         column:"price",
         type:"asc",
         name:"Harga Rendah"
     },
     {
-        key:"1",
+        id:1,
         column:"price",
         type:"desc",
         name:"Harga Tinggi"
     },
     {
-        key:"2",
+        id:2,
         column:"name",
         type:"asc",
         name:"A to Z"
     },
     {
-        key:"3",
+        id:3,
         column:"name",
         type:"desc",
         name:"X to A"
     },
     {
-        key:"4",
+        id:4,
         column:"rating",
         type:"asc",
         name:"Rating Tertinggi"
     },
     {
-        key:"5",
+        id:5,
         column:"rating",
         type:"desc",
         name:"Rating Terendah"

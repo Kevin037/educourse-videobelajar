@@ -2,6 +2,7 @@ import { formatNumberToK } from "../../data";
 import { Card } from "../Elements/card";
 import { H1, H2 } from "../Elements/heading";
 import { ButtonPrimary } from "../Elements/button";
+import { useEffect } from "react";
 
 export const ItemSpesification = (props) => {
     const {isDetail,data,id,facilities} = props
@@ -34,14 +35,12 @@ export const ItemSpesification = (props) => {
             <div className="grid grid-cols-2 ...">
                 {facilities.length > 0 && facilities.map((facility) => (
                     (facility.value) && (
-                        <>
-                        <div className="col-span-1 ... mt-3" key={facility.id}>
-                        <div className="grid grid-cols-4 ...">
-                            <div className="col-span-1 ..."><img src={`../assets/`+facility.img} alt="" /></div>
-                            <div className="col-span-3 ..."><p>{facility.value} {facility.name}</p></div>
+                        <div key={facility.key} className="col-span-1 ... mt-3">
+                            <div className="grid grid-cols-4 ...">
+                                <div className="col-span-1 ..."><img src={`../assets/`+facility.img} alt="" /></div>
+                                <div className="col-span-3 ..."><p>{facility.value} {facility.name}</p></div>
+                            </div>
                         </div>
-                    </div>
-                        </>
                     )
                 ))}
             </div>

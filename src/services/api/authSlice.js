@@ -1,23 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUser, logOutSession, store } from "../db";
+import api from "../api";
 
 export const loginUserThunk = createAsyncThunk(
   "user/login",
   async (credentials, thunkAPI) => {
     try {
-      const user = await loginUser(credentials);
-      const token = btoa(JSON.stringify({ email: user.email, time: new Date() }));
-      await store({
-        user_id: user.id,
-        access_token: token,
-        device: navigator.userAgent,
-        created_at: new Date().toISOString(),
-      },'sessions');
-      localStorage.setItem("user", user.id);
-      if (user.photo != null) {
-        localStorage.setItem("user_photo", user.photo); 
+      const user = await api.post('/auth/login', credentials);
+      let token = user?.data?.token;
+      if (user?.data?.user) {
+        localStorage.setItem("user", user?.data?.user.id);
+        if (user?.data?.user.photo != null) {
+          localStorage.setItem("user_photo", user?.data?.user.photo); 
+        }
+        localStorage.setItem("token", user?.data?.token);
       }
-      localStorage.setItem("token", token);
       return token;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -29,8 +25,11 @@ export const logOutuserThunk = createAsyncThunk(
   'lessons/deleteLesson',
 async (thunkAPI) => {
     try {
-      const logout = await logOutSession();
-      return logout;
+      await api.post('/auth/logout');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("user_photo");
+      return true;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }

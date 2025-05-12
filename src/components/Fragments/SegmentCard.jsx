@@ -35,10 +35,10 @@ export const ClassCard = (props) => {
             headContent={
                 <>
                      <div className="col-span-9 ...">
-                         <p className="hidden md:block">{order.modul_progress} Modul Terselesaikan</p>
+                         <p className="hidden md:block">{order.completed_my_classes}/{order.total_my_classes} Modul Terselesaikan</p>
                      </div>
                      <div className="col-span-3 ... text-left md:text-right mt-3 md:mt-0">
-                        <ClassStatusDisplay status={order.class_status} />
+                        <ClassStatusDisplay status={order.class_completed} />
                      </div>
                 </>
             }
@@ -52,16 +52,16 @@ export const ClassCard = (props) => {
                         <p className="text-sm mt-2 hidden md:block">Mulai transformasi dengan instruktur profesional, harga yang terjangkau, dan  kurikulum terbaik</p>
                         <div className="my-2 grid grid-cols-3 grid-cols-12">
                             <div className="col-span-2 md:col-span-1">
-                                <img src={`../assets/${order.avatar}`} alt="" />
+                                <img src={`../assets/${order.tutor_photo}`} alt="" />
                             </div>
                             <div className="text-sm col-span-10 md:col-span-10 ...">
-                                <p><b>{order.user}</b></p>
-                                <p>{order.user_position} di {order.user_company}</p>
+                                <p><b>{order.tutor}</b></p>
+                                <p>{order.tutor_position} di {order.tutor_company}</p>
                             </div>
                         </div>
                         <div className="my-2 grid grid-cols-3 grid-cols-5 text-sm text-gray-500 mt-4">
                             <div className="col-span-5 md:col-span-3 flex gap-2">
-                                <img src="../assets/modul.svg" className="w-5" alt="" />{order.total_modul} Modul
+                                <img src="../assets/modul.svg" className="w-5" alt="" />{order.total_my_classes} Modul
                                 <img src="../assets/time.svg" className="w-5" alt="" />{order.total_time} Menit
                             </div>
                             <div className="col-span-1"></div>
@@ -72,17 +72,17 @@ export const ClassCard = (props) => {
             footContent={
                 <>
                     <div className={`text-align col-span-6 md:col-span-3`}>
-                        Progres Kelas: <span className="font-bold">{order.percentage_progress}%</span>
+                        Progres Kelas: <span className="font-bold">{order.progress}%</span>
                     </div>
-                    <div className={`flex items-center col-span-6 ${(order.class_status == "in_progress") ? "md:col-span-5" : "md:col-span-3"}`}>
-                        {(order.class_status == "in_progress") && (
+                    <div className={`flex items-center col-span-6 ${(order.class_completed == "0") ? "md:col-span-5" : "md:col-span-3"}`}>
+                        {(order.class_completed == "0") && (
                             <img src="../assets/progress_bar_completed.svg" className="justify-center w-full" alt="" />
                         )}
-                        {(order.class_status == "completed") && (
+                        {(order.class_completed == "1") && (
                             <img src="../assets/progress_bar.svg" className="justify-center w-full" alt="" />  
                         )}
                     </div>
-                    {(order.class_status == "completed") && (
+                    {(order.class_completed == "1") && (
                         <>
                             <div className={`text-center md:text-right col-span-12 md:col-span-3 mt-4 md:mt-0`}>
                                 <ButtonWhiteMD varian="mx-1">Unduh Sertifikat</ButtonWhiteMD>
@@ -92,7 +92,7 @@ export const ClassCard = (props) => {
                             </div>
                         </>
                     )}
-                    {(order.class_status == "in_progress") && (
+                    {(order.class_completed == "0") && (
                         <div className={`text-center md:text-right col-span-12 md:col-span-4 mt-4 md:mt-0`}>
                             <ButtonPrimaryMD url={`/class/${order.order_id}`}>Lanjutkan Pembelajaran</ButtonPrimaryMD>  
                         </div>
@@ -126,11 +126,11 @@ export const OrderCard = (props) => {
                             <img className="rounded-lg object-cover h-auto" src={`../assets/${order.photo}`} alt="" />
                         </div>
                         <div className="col-span-9 md:col-span-9 ...border-r border-gray-300">
-                            <p className="text-lg">{order.title}</p>
+                            <p className="text-lg">{order.name}</p>
                         </div>
                         <div className="col-span-12 md:col-span-2 ... text-left md:text-right">
                             <p className="text-sm mt-3 md:mt-0">Harga</p>
-                            <p className="font-medium">Rp {number_format(order.new_price)}</p>
+                            <p className="font-medium">Rp {number_format(order.price)}</p>
                         </div>
                     </>
                 }
@@ -140,7 +140,7 @@ export const OrderCard = (props) => {
                             Total Pembayaran
                         </div>
                         <div className="col-span-5 ... text-right">
-                            <p className="price">Rp {number_format(order.new_price)}</p>
+                            <p className="price">Rp {number_format(order.price)}</p>
                         </div> 
                     </>
                 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Authlayout from "../Layouts/AuthLayout";
-import { getPaymentMethods, getToken } from "../../data";
+import { getPaymentMethods } from "../../data";
 import { ButtonPrimarySubmit } from "../Elements/button";
 import { Card } from "../Elements/card";
 import { H1 } from "../Elements/heading";
@@ -12,13 +12,12 @@ import { useParams } from "react-router-dom";
 import useOrder from "../../hooks/useOrder";
 
 const token = localStorage.getItem("token");
-const auth = localStorage.getItem("user");
 const CheckoutPage = () => {
     const {id} = useParams();
     const [paytmentMethods,setPaytmentMethods] = useState([]);
     const [openGroup, setOpenGroup] = useState("Transfer Bank");
     const [paymentMethod, setpaymentMethod] = useState("");
-    const { selectedClass, classFacilities } = useClass("",id);
+    const { selectedClass, classFacilities } = useClass(id);
     const [class_id] = useState(id);
 
     const { currentOrder, createOrder } = useOrder();
@@ -37,34 +36,14 @@ const HandleCheckout = (e) => {
         return false;
     }
     
+    const price = selectedClass.new_price;
 
-    const no = "HEL/VI/"+getToken(true);
-    const order_id = getToken();
-    const paid_at = "";
-    const status = "pending";
-    const avatar = selectedClass.avatar;
-    const new_price = selectedClass.new_price;
-    const price = selectedClass.price;
-    const page_title = selectedClass.page_title;
-    const photo = selectedClass.photo;
-    const rating = selectedClass.rating;
-    const title = selectedClass.title;
-    const total_modul = selectedClass.total_modul;
-    const total_time = selectedClass.total_time;
-    const user = selectedClass.user;
-    const user_company = selectedClass.user_company;
-    const user_position = selectedClass.user_position;
-    const user_id = auth;
-    const class_status = "in_progress"
-
-    createOrder({ order_id, no, class_id, paymentMethod, paid_at, status
-     , avatar, new_price, price, page_title, photo, rating, title, total_modul, total_time, user, user_company, user_position, user_id, class_status
-     });
+    createOrder({ price, class_id, paymentMethod });
 };
 
 useEffect(() => {
     if (currentOrder) {
-        window.location.href = "/payment/"+currentOrder.order_id;
+        window.location.href = "/payment/"+currentOrder;
     }
 }, [currentOrder]);
 

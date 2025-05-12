@@ -24,13 +24,13 @@ export const FilterSection = ({ title, options, name, onChange }) => {
         <div className="mt-4 space-y-3">
           {options.map((option) => (
             <label
-              key={option.key}
+              key={option.id}
               className="flex items-center gap-2 cursor-pointer text-sm text-gray-700"
             >
               <input
                 type="radio"
                 name={name}
-                value={option.key}
+                value={option.id}
                 className="accent-green-500"
                 onChange={onChange}
               />

@@ -1,11 +1,11 @@
 // hooks/useUser.js
 import { useDispatch, useSelector } from 'react-redux';
-import { createOrderThunk, createReviewThunk, fetchTestResult, getOrderById, getOrders, paidOrderThunk, updateOrderThunk } from '../services/api/orderSlice';
+import { createOrderThunk, createReviewThunk, fetchTestResult, getMyClasses, getOrderById, getOrders, paidOrderThunk, updateOrderThunk } from '../services/api/orderSlice';
 import { useEffect } from 'react';
 
-const useOrder = (id=null,order_id=null, columnName=null, user_id = null, testId = null) => {
+const useOrder = (id=null,params=null, testId = null, classes = false) => {
   const dispatch = useDispatch();
-  const { orderData, currentOrder, loading, error, status, orderLessons, resultData } = useSelector(state => state.order);
+  const { orderData, currentOrder, loading, error, status, orderLessons, resultData, myClassData } = useSelector(state => state.order);
 
   const createOrder = (userData) => {
     dispatch(createOrderThunk(userData));
@@ -15,8 +15,8 @@ const useOrder = (id=null,order_id=null, columnName=null, user_id = null, testId
     dispatch(createReviewThunk(reviewData));
   };
 
-  const updateOrder = (id,orderData) => {
-    dispatch(updateOrderThunk({id,orderData}));
+  const updateOrder = (orderData) => {
+    dispatch(updateOrderThunk(orderData));
   };
 
   const paidOrder = (id) => {
@@ -25,19 +25,20 @@ const useOrder = (id=null,order_id=null, columnName=null, user_id = null, testId
 
     useEffect(() => {
       if (testId) {
-        console.log(testId);
-        
         dispatch(fetchTestResult(testId));
       }
-      if (order_id || user_id) {
-        dispatch(getOrders({order_id,columnName, user_id})); 
+      // if (order_id || user_id) {
+        dispatch(getOrders(params)); 
+      // }
+      if (classes) {
+        dispatch(getMyClasses(params));
       }
       if (id) {
         dispatch(getOrderById(id));
       }
-    }, [dispatch,order_id]);
+    }, [dispatch,params]);
 
-  return { currentOrder, loading, error, createOrder, orderData, updateOrder, status, orderLessons, createReview, resultData, paidOrder };
+  return { currentOrder, loading, error, createOrder, orderData, updateOrder, status, orderLessons, createReview, resultData, paidOrder, myClassData };
 };
 
 export default useOrder;

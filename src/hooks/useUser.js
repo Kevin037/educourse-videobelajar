@@ -1,9 +1,9 @@
 // hooks/useUser.js
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserById, registerUserThunk, resetUser, updateUserThunk } from '../services/api/userSlice';
+import { getUserById, registerUserThunk, resetUser, updateUserPhotoThunk, updateUserThunk } from '../services/api/userSlice';
 import { useEffect } from 'react';
 
-const useUser = (id=null) => {
+const useUser = () => {
   const dispatch = useDispatch();
   const { currentUser, loading, error, status } = useSelector(state => state.user);
 
@@ -12,20 +12,22 @@ const useUser = (id=null) => {
     dispatch(registerUserThunk(userData));
   };
 
-    const update = (id,userData) => {
-      dispatch(updateUserThunk({id,userData}));
+    const update = (userData) => {
+      dispatch(updateUserThunk(userData));
+    };
+
+    const updateImage = (userData) => {
+      dispatch(updateUserPhotoThunk(userData));
     };
 
   // Optional reset state
   const reset = () => dispatch(resetUser());
 
     useEffect(() => {
-      if (id) {
-        dispatch(getUserById(id));
-      }
+        dispatch(getUserById());
     }, [dispatch]);
 
-  return { currentUser, loading, error, register, reset, update, status };
+  return { currentUser, loading, error, register, reset, update, status, updateImage };
 };
 
 export default useUser;

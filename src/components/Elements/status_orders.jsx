@@ -39,8 +39,8 @@ export const ClassStatusDisplay = (props) => {
     const {status} = props;
     return (
         <>
-            {status == "in_progress" && (<PendingStatus label="Sedang Berjalan" />)}
-            {status == "completed" && (<SuccessStatus label="Selesai" />)}
+            {status == "0" && (<PendingStatus label="Sedang Berjalan" />)}
+            {status == "1" && (<SuccessStatus label="Selesai" />)}
         </>
     )
 }

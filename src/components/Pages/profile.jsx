@@ -9,19 +9,16 @@ import useUser from "../../hooks/useUser";
 import Resizer from 'react-image-file-resizer';
 
 const token = localStorage.getItem("token");
-const auth = localStorage.getItem("user");
 const ProfilePage = () => {
     const [file, setFile] = useState(null);
-    const [base64photo, setBase64photo] = useState('');
-    const { currentUser } = useUser(auth);
+    const { currentUser, update, status, updateImage } = useUser();
     const [name, setName] = useState("");
     const [no_hp, setNoHp] = useState("");
-    const { update, status } = useUser();
     const selectPhotoRef = useRef();
 
     useEffect(() => {
         if(token === null) {
-            window.location.href = "/login";
+            window.location.reload();
         }
     }, []);
 
@@ -34,7 +31,7 @@ const ProfilePage = () => {
 
     const HandlePaid = (e) => {
         e.preventDefault();
-        update(auth,{ name, no_hp });
+        update({ name, no_hp });
     };
 
     useEffect(() => {
@@ -54,36 +51,11 @@ const ProfilePage = () => {
   
       useEffect(() => {
         if (file != null) {
-            ResizePhoto(file)   
+            const formData = new FormData();
+            formData.append('image', file);
+            updateImage(formData);
         }
-      },[file])
-  
-      const ResizePhoto = (file) => {
-        new Promise(() => {
-            Resizer.imageFileResizer(
-              file,
-              300,
-              300,
-              'JPEG',
-              100,
-              0,
-              (uri) => {
-                setBase64photo(uri);
-              },
-              'base64',
-            );
-        });
-    };
-  
-    useEffect(() => {
-      if (base64photo != "") {
-          UpdatePhotoDB();
-      }
-  },[base64photo]); 
-  
-    const UpdatePhotoDB = async () => {
-        update(auth,{ photo:base64photo });
-    }
+      },[file]);
  return (
     <Authlayout title="Home" navType="home" withFooter={true}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -146,9 +118,12 @@ const ProfilePage = () => {
                                 label="No. Hp"
                                 value={no_hp}
                                 name="hp"
-                                onChange={e => setNoHp(e.target.value)}
+                                onChange={e => {
+                                    const onlyNumbers = e.target.value.replace(/\D/g, '');
+                                    setNoHp(onlyNumbers);
+                                }}
                                 className="col-span-3 md:col-span-2"
-                                type="number"
+                                type="text"
                             />
                         </div>
                         <div className="mt-4 flex justify-end">

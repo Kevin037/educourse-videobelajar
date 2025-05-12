@@ -8,14 +8,12 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { ItemSpesification } from "../Fragments/ItemSpesification";
 import { useParams } from "react-router-dom";
 import useClass from "../../hooks/useClass";
-import useTutor from "../../hooks/useTutor";
 
 const token = localStorage.getItem("token");
 const ProductPage = () => {
     const {id} = useParams();
-    const { selectedClass, classLessons, classFacilities } = useClass("",id);
-    const { limitedClass } = useClass("",id,3);
-    const { tutorData } = useTutor(id);
+    const { selectedClass, classFacilities } = useClass(id);
+    const { limitedClass } = useClass(id,3);
 
 useEffect(() => {
     if(token === null) {
@@ -41,7 +39,7 @@ const strLimit = (str, limit) => {
                 <div className="banner-content">
                     <BannerContent 
                         title={selectedClass?.page_title}
-                        desc="Belajar bersama tutor profesional di Video Course. Kapanpun, di manapun."
+                        desc={selectedClass?.description}
                         varian="text-left"
                     >
                     <img className="mt-3" src="../assets/head_star.svg" alt="" />
@@ -51,17 +49,17 @@ const strLimit = (str, limit) => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 ...">
                 <div className="col-span-2 ... order-2 md:order-1">
-                    {selectedClass?.long_desc && (
+                    {selectedClass?.long_description && (
                         <Card varian="md:mr-4">
                             <H1>Deskripsi</H1><br />
-                            <p>{selectedClass.long_desc}</p>
+                            <p>{selectedClass.long_description}</p>
                         </Card>  
                     )}
-                    {tutorData.length > 0 && (
+                    {selectedClass?.tutors.length > 0 && (
                         <Card varian="md:mr-4 mt-4 py-6">
                             <H1>Belajar bersama Tutor Profesional</H1><br />
                             <div className="grid grid-cols-1 md:grid-cols-2 ...">
-                                {tutorData.map((item) => (
+                                {selectedClass?.tutors.map((item) => (
                                     <div className="col-span-1 ..." key={item.id}>
                                         <Card varian="md:mr-4">
                                             <div className="grid grid-cols-12 ...">
@@ -71,7 +69,7 @@ const strLimit = (str, limit) => {
                                                     <p className="text-xs mx-2">{item.position} di <span className="font-medium">{item.company}</span></p>
                                                 </div>
                                             </div>
-                                            <p className="mt-2">{item.desc}</p>
+                                            <p className="mt-2">{item.description}</p>
                                         </Card>
                                     </div>
                                 ))}
@@ -80,7 +78,7 @@ const strLimit = (str, limit) => {
                     )}
                     <Card varian="md:mr-4">
                         <H1>Kamu akan Mempelajari</H1><br />
-                        {classLessons.map((section, index) => (
+                        {selectedClass?.modules.map((section, index) => (
                             <div key={index} className="mb-4">
                             {/* Section Header */}
                             <button
@@ -97,16 +95,16 @@ const strLimit = (str, limit) => {
                             </button>
 
                             {/* Lessons */}
-                            {openIndex === index && section.lessons.length > 0 && (
+                            {openIndex === index && selectedClass?.modules.length > 0 && (
                                 <div className="mt-3 space-y-2 pl-3">
-                                {section.lessons.map((lesson, i) => (
+                                {selectedClass?.modules.map((lesson, i) => (
                                     <div
                                     key={i}
                                     className="flex items-center justify-between bg-white p-3 rounded border"
                                     >
                                     <div className="grid grid-cols-12 ...">
                                         <div className="col-span-9">
-                                            {lesson.name}
+                                            {lesson.title}
                                         </div>
                                         <div className="col-span-3 flex justify-end hidden md:block">
                                             <div className="flex items-center gap-1">

@@ -9,20 +9,19 @@ import { SidebarMenu } from "../Fragments/SidebarMenu";
 import useOrder from "../../hooks/useOrder";
 
 const token = localStorage.getItem("token");
-const auth = localStorage.getItem("user");
 const OrderPage = () => {
 
-    const [activeTab, setActiveTab] = useState("all");
+    const [activeTab, setActiveTab] = useState("");
     const [orderStatus, setOrderStatus] = useState([]);
-    let id_order = null;
-    let categoryParam = null;
-    let categoryColumn = null;
-    let user_id = auth;
-    if (activeTab !== "all") {
-        categoryParam = activeTab;
-        categoryColumn = "status";
-      }
-    const { orderData } = useOrder(id_order, categoryParam, categoryColumn, user_id);
+    const [params, setParams] = useState({});
+    useEffect(() => {
+    if (activeTab !== "") {
+       setParams({status: activeTab});
+    } else {
+        setParams({});
+    }
+    },[activeTab])
+    const { orderData } = useOrder(null,params);
 
     useEffect(() => {
         if(token === null) {
