@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check} from "lucide-react";
 import { H1 } from "../Elements/heading";
 import { ButtonPrimary, ButtonSecondary } from "../Elements/button";
 import ModalSubmitTest from "./ModalSubmitTest";
+import { Link } from "react-router-dom";
 
 const QuestionLesson = (props) => {
     const {orderData,type,classId,testNo,test,tests} = props
@@ -22,14 +23,14 @@ const QuestionLesson = (props) => {
 
     useEffect(() => {
         if (tests.length > 0) {
-            setTotalAnswer(tests.filter(item => item.user_answer != "").length);
+            setTotalAnswer(tests.filter(item => item.user_answer != null).length);
         }
     },[tests])
 
     const SendAnswer = (e,key) => {
         setSelectedOption(key)
         e.preventDefault();
-        updateAnswer(testNo,{user_answer:key});
+        updateAnswer({id:testNo,answer:key});
     };
     return (
         <>
@@ -39,9 +40,9 @@ const QuestionLesson = (props) => {
                     <div className="grid grid-cols-10 ...">
                         {tests && tests.map((pretest) => (
                         <div className="col-span-2 ... p-2">
-                            <a href={`/class/${classId}/${type}/${pretest.id}`} 
+                            <Link to={`/class/${classId}/${type}/${pretest.id}`} 
                             className={`border-1 p-2 w-8 h-8 flex items-center justify-center border-gray-300 border-radius
-                            ${pretest.user_answer != "" ? "bg-green-50 text-green-900 font-bold" : ""} ${pretest.id == testNo ? "bg-green-200 text-green-800" : ""}`}>{pretest.no}</a>
+                            ${pretest.user_answer != "" ? "bg-green-50 text-green-900 font-bold" : ""} ${pretest.id == testNo ? "bg-green-200 text-green-800" : ""}`}>{pretest.no}</Link>
                         </div>
                         ))}
                     </div>
@@ -64,7 +65,7 @@ const QuestionLesson = (props) => {
                                 name="custom-radio"
                                 value={option.value}
                                 checked={selectedOption === option.key}
-                                onChange={(e) =>  (e,option.key)}
+                                onChange={(e) =>  SendAnswer(e,option.key)}
                                 className="accent-green-500 mr-3"
                             />
                             <span className="text-sm">{option.value}</span>
@@ -100,7 +101,9 @@ const QuestionLesson = (props) => {
                                             totalQuestions={answerOptions.length} 
                                             totalAnswer={totalAnswer}
                                             orderId={orderData?.order_id}
-                                            type={type} />
+                                            type={type}
+                                            setModalOpen={setModalOpen}
+                                            />
                                     </>
                                 )}
                             </div>

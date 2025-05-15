@@ -12,12 +12,10 @@ import ModalReview from "../Fragments/ModalReview";
 const token = localStorage.getItem("token");
 const MyClassPage = () => {
     const {id,lessonId,no,rules} = useParams();
-    const { orderData, orderLessons } = useOrder(null,id,"order_id");
-    const quizId = (rules === "result") ? no : null;
-    const { resultData } = useOrder(null,null,null,null,quizId);
+    const { currentOrder, orderLessons } = useOrder(id);
     const lesson_id = (lessonId) ? (lessonId  == "pre-test" || lessonId  == "quiz") ?  (lessonId  == "pre-test") ? orderLessons[0]?.lessons[0]?.id : no : lessonId : orderLessons[0]?.lessons[0]?.id;
     const { selectedLesson,beforeLesson,afterLesson } = useLesson(lesson_id);
-    const { test, tests } = useLesson(null, null, null, no);
+    const { test, tests, resultData } = useLesson(null, null, null, no);
     const [isModalOpen, setModalOpen] = useState(false);
     const {completeModule,status} = useLesson()
 
@@ -52,14 +50,14 @@ const strLimit = (str, limit) => {
   };
 
 const CompleteModule = (e,key) => {
-    if (selectedLesson?.complete) {
+    if (selectedLesson?.status === "completed") {
         window.location.href = `/class/${id}/${key}`
         return false;
     }
     setNextPage(key);
     e.preventDefault();
     if (confirm("Apakah anda yakin ingin menyelesaikan modul ini?")) {
-        completeModule(lessonId);   
+        completeModule({id:lessonId});   
     }
 };
 
@@ -78,13 +76,13 @@ useEffect(() => {
         customLogo={beforeLesson && (
             <a href={`/class/${id}/${beforeLesson?.id}`}><span className="text-xl">←</span> {strLimit(beforeLesson?.name, 60)}</a>
         )}
-        customHead={<ProgressPopover id={orderData[0]?.id} progress={orderData[0]?.progress} completeModule={orderData[0]?.totalCompletedModule} totalModule={orderData[0]?.totalModule} />}
+        customHead={<ProgressPopover id={currentOrder?.id} progress={currentOrder?.progress} completeModule={currentOrder?.totalCompletedModule} totalModule={currentOrder?.totalModule} />}
         userPhoto={true}
     >
         <div className="border-t border-gray-200 flex flex-col">
             <div className="grid grid-cols-1 md:grid-cols-12 ...">
                 <div className="col-span-1 md:col-span-8 ... sm:pb-0 md:pb-20">
-                    <ContentLessson orderData={orderData[0]} type={lessonId} classId={id} testNo={no} test={test} tests={tests} rules={rules} resultData={resultData} selectedLesson={selectedLesson}/>   
+                    <ContentLessson orderData={currentOrder} type={lessonId} classId={id} testNo={no} test={test} tests={tests} rules={rules} resultData={resultData} selectedLesson={selectedLesson}/>   
                 </div>
                 <div className="cols-span-1 flex flex-col block md:hidden my-8">
                     <div className={`left-0 w-full bg-green-600 text-white flex ${afterLesson && !beforeLesson ? "justify-end" : "justify-between"} items-center px-4 py-3 z-50`}>
@@ -102,7 +100,7 @@ useEffect(() => {
                 </div>
                 <div className="col-span-1 md:col-span-4 ... border-l border-gray-300">
                     <div className="md:overflow-y-scroll md:h-130 pb-4 mb-15">
-                    <a  href={`/class/${id}/pre-test/${orderData[0]?.pretestId}/rules`} className="flex items-center mb-4 mt-3">
+                    <a  href={`/class/${id}/pre-test/${currentOrder?.pretestId}/rules`} className="flex items-center mb-4 mt-3">
                         <div
                         className={`justify-between w-full ${activeLesson === "pre-test" ? "bg-green-100" : "bg-white"} p-3 rounded-lg border border-gray-300 cursor-pointer hover:bg-green-50 mx-4`}
                         >
@@ -110,7 +108,7 @@ useEffect(() => {
                                 <div className="flex items-center gap-1">
                                     <img src="/assets/lesson_test.svg" alt="" />
                                     <span className="text-sm text-gray-800">pre-test: </span>
-                                    Introduction to {orderData[0]?.title}
+                                    Introduction to {currentOrder?.title}
                                 </div>
                                 <span className="text-sm text-gray-500 ml-6">10 Pertanyaan</span>
                             </div>
@@ -138,12 +136,12 @@ useEffect(() => {
                                 className="flex items-center">
                                 <div
                                 key={i}
-                                className={`justify-between w-full ${activeLesson === lesson.id ? "bg-green-100" : "bg-white"} p-3 rounded-lg border border-gray-300 cursor-pointer hover:bg-green-50 mx-4`}
+                                className={`justify-between w-full ${Number(activeLesson) === lesson.id ? "bg-green-100" : "bg-white"} p-3 rounded-lg border border-gray-300 cursor-pointer hover:bg-green-50 mx-4`}
                                 >
                                     <div>
                                         <div className="flex items-center gap-1">
                                             {lesson.type === "quiz" && <img src="/assets/test.svg" alt="" />}
-                                            {lesson.type === "video" ? (lesson.complete) ? (<img src="/assets/completeModule.svg" alt="" />) : (<img src="/assets/play.svg" alt="" />) : ""}
+                                            {lesson.type === "video" ? (lesson.status === "completed") ? (<img src="/assets/completeModule.svg" alt="" />) : (<img src="/assets/play.svg" alt="" />) : ""}
                                             {lesson.type === "rangkuman" && <img src="/assets/rangkuman.svg" alt="" />}
                                             <span className="text-sm text-gray-800">{ucfirst(lesson.type)}: </span>
                                             {(lesson.type === "video") ?lesson.name : lesson.group_name}
@@ -164,7 +162,7 @@ useEffect(() => {
                         <Link onClick={() => setModalOpen(true)} className="text-white flex gap-2"><img src="../assets/star.svg" alt="" /> Beri Review & Rating</Link>
                     </div>
                 </div>
-                <ModalReview isOpen={isModalOpen} user_rating={orderData[0]?.user_rating} onClose={() => setModalOpen(false)} id={orderData[0]?.id} />
+                <ModalReview isOpen={isModalOpen} user_rating={currentOrder?.user_rating} onClose={() => setModalOpen(false)} id={currentOrder?.id} />
             </div>
             <div className="flex flex-col hidden md:block">
                 <div className={`fixed bottom-0 left-0 w-full bg-green-600 text-white flex ${afterLesson && !beforeLesson ? "justify-end" : "justify-between"} items-center px-4 py-3 z-50`}>

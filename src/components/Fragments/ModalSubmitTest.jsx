@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useOrder from "../../hooks/useOrder";
 import { ButtonPrimary, ButtonWhite } from "../Elements/button";
 import Modal from "../Elements/Modal";
 import useLesson from "../../hooks/useLesson";
 
-export default function ModalSubmitTest({ isOpen, onClose, totalAnswer, totalQuestions, testNo, orderId, type }) {
+export default function ModalSubmitTest({ isOpen, onClose, totalAnswer, totalQuestions, testNo, orderId, type, setModalOpen }) {
   if (!isOpen) return null;
   const {submitTest,submitStatus} = useLesson();
 
@@ -12,9 +12,10 @@ export default function ModalSubmitTest({ isOpen, onClose, totalAnswer, totalQue
     e.preventDefault()
     if (totalAnswer != totalQuestions) {
         alert("Jawaban belum lengkap");
+        setModalOpen(false);
         return false;
     }
-      submitTest(testNo);
+      submitTest({id:testNo});
   };
   useEffect(() => {
     if (submitStatus) {

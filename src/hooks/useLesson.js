@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CompleteModuleThunk, fetchExamByNo, fetchLessonById, fetchOrderLessonById, submitTestThunk, updateAnswerThunk } from '../services/api/lessonSlice';
+import { CompleteModuleThunk, fetchExamByNo, fetchOrderLessonById, submitTestThunk, updateAnswerThunk } from '../services/api/lessonSlice';
 
 const useLesson = (id=null, orderId = null, type = null, no = null) => {
   const dispatch = useDispatch();
-  const {selectedLesson,beforeLesson,afterLesson,test,tests,status,submitStatus} = useSelector((state) => state.lesson);
+  const {selectedLesson,beforeLesson,afterLesson,test,tests,status,submitStatus,answerStatus,resultData} = useSelector((state) => state.lesson);
   const loading = useSelector(state => state.class.loading);
   const error = useSelector(state => state.class.error);
 
-  const updateAnswer = (id,AnswerData) => {
-    dispatch(updateAnswerThunk({id,AnswerData}));
+  const updateAnswer = (AnswerData) => {
+    dispatch(updateAnswerThunk(AnswerData));
   };
 
   const submitTest = (orderLessonId) => {
@@ -29,7 +29,7 @@ const useLesson = (id=null, orderId = null, type = null, no = null) => {
     }
   }, [dispatch,id,orderId,type,no]);
 
-  return { selectedLesson, loading, error, beforeLesson, afterLesson, test, tests, updateAnswer,status, submitTest, submitStatus, completeModule };
+  return { selectedLesson, loading, error, beforeLesson, afterLesson, test, tests, updateAnswer,status, submitTest, submitStatus, completeModule,answerStatus, resultData };
 };
 
 export default useLesson;

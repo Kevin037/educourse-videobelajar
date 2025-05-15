@@ -29,11 +29,6 @@ const ClassPage = () => {
         }
         setClassGroups(getClassGroups());
     }, []);
-
-    useEffect(() => {
-        console.log(myClassData);
-        
-    },[myClassData]);
  return (
     <Authlayout title="Home" navType="home" withFooter={true}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Authlayout from "../Layouts/AuthLayout";
 import { Card } from "../Elements/card";
 import useOrder from "../../hooks/useOrder";
@@ -13,6 +13,11 @@ const CertificatePage = () => {
     const certRef = useRef(null);
     const {id} = useParams();
     const { currentOrder } = useOrder(id);
+
+    useEffect(() => {
+        console.log(currentOrder);
+        
+    }, [currentOrder]);
 
 const downloadCertificate = () => {
       html2canvas(certRef.current).then((canvas) => {
@@ -39,20 +44,20 @@ const downloadCertificate = () => {
                                     <h1 className="text-lg text-black">{currentUser?.name}</h1>
                                 </div>
                                 <div className="absolute top-[243px] left-0 w-full text-center">
-                                    <p className="text-[8px] text-black">For successfully completing <br />{currentOrder?.title}</p>
+                                    <p className="text-[8px] text-black">For successfully completing <br />{currentOrder?.name}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-12 mt-5">
                         <div className="col-span-9">
-                            <h4 className="text-ls sm:mt-2 font-bold">{currentOrder?.title}</h4>
-                            <p className="text-sm mt-1 text-gray-400">{currentOrder?.desc}</p>
+                            <h4 className="text-ls sm:mt-2 font-bold">{currentOrder?.name}</h4>
+                            <p className="text-sm mt-1 text-gray-400">{currentOrder?.description}</p>
                             <div className="flex gap-4 mt-3">
-                                <img src={`../assets/${currentOrder?.avatar}`} alt="" />
+                                <img src={`../assets/${currentOrder?.tutor_photo}`} alt="" />
                                 <div>
-                                    <p><b>{currentOrder?.user}</b></p>
-                                    <p>{currentOrder?.user_position} di {currentOrder?.user_company}</p>
+                                    <p><b>{currentOrder?.tutor}</b></p>
+                                    <p>{currentOrder?.user_position} di {currentOrder?.tutor_company}</p>
                                 </div>
                             </div>
                             <div className="flex gap-4">

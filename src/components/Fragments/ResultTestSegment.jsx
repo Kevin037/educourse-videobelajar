@@ -7,10 +7,6 @@ const TestResult = (props) => {
     const {type,classId,resultData,testNo} = props
     const remedial = (type == "quiz" && resultData?.score < 70) ? true : false
     const image = (remedial) ? "/assets/tryagain.svg" : "/assets/result.svg"
-    useEffect(() => {
-        console.log(resultData);
-        
-    },resultData)
     return (
         <>
             <img src={image} alt="" />

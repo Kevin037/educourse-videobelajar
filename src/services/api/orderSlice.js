@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { deleteDataById, getDataById, parseFirestoreFields, retrieveData, retrieveDataMultipleCondition, store, update } from "../db";
 import api from '../api';
 
 const initialState = {
@@ -10,7 +9,6 @@ const initialState = {
   loading: false,
   error: null,
   status: null,
-  resultData: null
 };
 
 export const createOrderThunk = createAsyncThunk(
@@ -29,17 +27,8 @@ export const createReviewThunk = createAsyncThunk(
   'order/review',
   async (reviewData, thunkAPI) => {
     try {
-      const reviews = await retrieveData('reviews', reviewData.order_id,"order_id");
-      if (reviews.length > 0) {
-        for (let i = 0; i < reviews.length; i++) {
-          await deleteDataById(reviews[i].id,'reviews');
-        }
-      }
-      const res = await store(reviewData,'reviews');
-      if (res) {
-        const order = await update({user_rating:reviewData.rating,user_review:reviewData.review},'orders',reviewData.order_id); 
-        return order;
-      }
+      await api.post(`/orders/review`, reviewData);
+      return true;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -99,58 +88,12 @@ export const getOrderById = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const res = await api.get('/orders/' + id);
-      return res?.data?.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
-    }
-  }
-);
-
-export const fetchTestResult = createAsyncThunk(
-  'test/result',
-  async (testId, thunkAPI) => {
-    try {
-      const test = await getDataById(testId, 'order_lessons');
-      
-      if(test){
-        const testData = parseFirestoreFields(test.fields)
-        
-        let whereTests = [];
-        if (testData.type === "pre-test") {
-          whereTests = [
-            {field: "order_id", operator: "==", value: testData.order_id},
-            {field: "type", operator: "==", value: testData.type},
-          ]
-        }
-        if (testData.type === "quiz") {
-          whereTests = [
-            {field: "order_id", operator: "==", value: testData.order_id},
-            {field: "type", operator: "==", value: testData.type},
-            {field: "group_name", operator: "==", value: testData.group_name},
-          ]
-        }
-        
-        const tests = await retrieveDataMultipleCondition('order_lessons', whereTests);
-        let correct = 0;
-        for (let i = 0; i < tests.length; i++) {
-          if (tests[i].answer == tests.user_answer) {
-            correct++;
-          }
-        }
-        const score = (correct / tests.length) * 100
-        
-        return {
-          resultData : {
-            total_questions : tests.length,
-            correct_answers : correct,
-            score : score,
-            wrong_answers : tests.length - correct,
-            submitted_at: testData.submitted_at
-          }
-        }
+      return {
+        order: res?.data?.data,
+        orderLessons: res?.data.orderLessons
       }
     } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
@@ -212,7 +155,8 @@ const orderSlice = createSlice({
       })
       .addCase(getOrderById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentOrder = action.payload;
+        state.currentOrder = action.payload.order;
+        state.orderLessons = action.payload.orderLessons;
       })
       .addCase(getOrderById.rejected, (state, action) => {
         state.loading = false;
@@ -229,17 +173,6 @@ const orderSlice = createSlice({
       .addCase(createReviewThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
-      })
-      .addCase(fetchTestResult.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchTestResult.fulfilled, (state, action) => {
-        state.loading = false;
-        state.resultData = action.payload.resultData;
-      })
-      .addCase(fetchTestResult.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
       })
       .addCase(paidOrderThunk.pending, (state) => {
         state.loading = true;

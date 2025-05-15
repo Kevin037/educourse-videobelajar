@@ -16,7 +16,7 @@ export default function ModalReview({ isOpen, onClose, id, user_rating }) {
       alert("Pilih Rating Terlebih Dahulu");
       return false;
     }
-    createReview({ order_id:id,rating:rating,review:review });
+    createReview({ order_id:id,rating:rating,description:review });
   };
 
   useEffect(() => {
